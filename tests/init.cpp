@@ -4,7 +4,6 @@
 
 TEST(InitTests, Dynamic) {
     using namespace EAPP;
-
     using EventArrayType = EventAccessContainer<int, ContainerType::Dynamic>;
 
     EventArrayType defaultInit{};
