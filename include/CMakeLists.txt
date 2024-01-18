@@ -1,0 +1,2 @@
+add_library(EventAccessArrayPP INTERFACE)
+target_include_directories(EventAccessArrayPP INTERFACE .)
