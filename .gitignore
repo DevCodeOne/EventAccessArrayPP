@@ -1,5 +1,7 @@
+# Ignore everything
 *
 
+# Except these
 !tests
 !tests/*
 !include
