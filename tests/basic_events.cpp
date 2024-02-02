@@ -4,40 +4,77 @@
 
 template<typename T>
 struct EleType {
-    size_t id;
     T elem;
 };
 
 template<typename T>
 bool operator==(const EleType<T> &lhs, const EleType<T> &rhs) {
-    return lhs.id == rhs.id && lhs.elem == rhs.elem;
+    return lhs.elem == rhs.elem;
 }
 
 TEST(BasicEvents, Dynamic) {
     using namespace EAPP;
-    using EventArrayType = EventAccessContainer<EleType<const char *>, ContainerType::Dynamic>;
+    using EventArrayType = EventAccessContainer<ForwardId<256u>, EleType<const char *>, ContainerType::Dynamic>;
 
-    EventArrayType::ContainerType data{
-        EleType<const char *>{0, "First"}, 
-        EleType<const char *>{0, "Second"},
-        EleType<const char *>{2, "Third"}
+    std::array<EleType<const char *>, 3> data{
+        EleType<const char *>{"First"},
+        EleType<const char *>{"Second"},
+        EleType<const char *>{"Third"}
     };
-    EventArrayType initWithData{data};
 
-    Events::ReadEvent<EleType<const char *>> readFirst{.id = 0};
-    initWithData.dispatch(readFirst);
+    EventArrayType basic{};
 
-    // First element
-    EXPECT_EQ((readFirst.element == EleType<const char *>{0, "First"}), true);
-    // Still first element
-    EXPECT_EQ((readFirst.element == EleType<const char *>{0, "Second"}), false);
+    Events::AddEvent<EventArrayType> addFirst{.element = data[0]};
+    basic.dispatch(addFirst);
+    Events::AddEvent<EventArrayType> addSecond{.element = data[0]};
+    basic.dispatch(addSecond);
+    Events::AddEvent<EventArrayType> addThird{.element = data[1]};
+    basic.dispatch(addThird);
 
-    Events::ReadEvent<EleType<const char *>> readThird{.id = 2};
-    initWithData.dispatch(readThird);
-    // Third element
-    EXPECT_EQ((readThird.element == EleType<const char *>{2, "Third"}), true);
+
+    EXPECT_EQ(addFirst.toId, 0);
+    EXPECT_EQ(addFirst.element, data[0]);
+    EXPECT_EQ(addSecond.toId, 1);
+    EXPECT_EQ(addSecond.element, data[0]);
+    EXPECT_EQ(addThird.toId, 2);
+    EXPECT_EQ(addThird.element, data[1]);
+
 }
 
 TEST(BasicEvents, Fixed) {
+    using namespace EAPP;
+    using EventArrayType = EventAccessContainer<ForwardId<256u>, EleType<const char *>, ContainerType::Fixed, ContainerSize<15>>;
 
+    std::array<EleType<const char *>, 3> data{
+        EleType<const char *>{"First"},
+        EleType<const char *>{"Second"},
+        EleType<const char *>{"Third"}
+    };
+
+    EventArrayType basic{};
+
+    Events::AddEvent<EventArrayType> addFirst{.element = data[0]};
+    basic.dispatch(addFirst);
+    Events::AddEvent<EventArrayType> addSecond{.element = data[0]};
+    basic.dispatch(addSecond);
+    Events::AddEvent<EventArrayType> addThird{.element = data[1]};
+    basic.dispatch(addThird);
+
+
+    EXPECT_EQ(addFirst.toId, 0);
+    EXPECT_EQ(addFirst.element, data[0]);
+    EXPECT_EQ(addSecond.toId, 1);
+    EXPECT_EQ(addSecond.element, data[0]);
+    EXPECT_EQ(addThird.toId, 2);
+    EXPECT_EQ(addThird.element, data[1]);
+
+    // // First element
+    // EXPECT_EQ((readFirst.element == EleType<const char *>{"First"}), true);
+    // // Still first element
+    // EXPECT_EQ((readFirst.element == EleType<const char *>{"Second"}), false);
+
+    // Events::ReadEvent<EleType<const char *>> readThird{.id = 2};
+    // initWithData.dispatch(readThird);
+    // // Third element
+    // EXPECT_EQ((readThird.element == EleType<const char *>{"Third"}), true);
 }

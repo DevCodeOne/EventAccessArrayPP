@@ -4,20 +4,17 @@
 
 TEST(InitTests, Dynamic) {
     using namespace EAPP;
-    using EventArrayType = EventAccessContainer<int, ContainerType::Dynamic>;
+    using EventArrayType = EventAccessContainer<ForwardId<256u>, int, ContainerType::Dynamic>;
 
     EventArrayType defaultInit{};
-
-    EventArrayType::ContainerType data{1, 5, 6};
-    EventArrayType initWithData{data};
+    EventArrayType initWithData{1, 5, 6};
 }
 
 TEST(InitTests, Fixed) {
     using namespace EAPP;
 
-    using EventArrayType = EventAccessContainer<int, ContainerType::Fixed, ContainerSize<15>>;
+    using EventArrayType = EventAccessContainer<ForwardId<256u>, int, ContainerType::Fixed, ContainerSize<15>>;
 
     EventArrayType defaultInit{};
-    EventArrayType::ContainerType data{1, 5, 6};
-    EventArrayType initWithData{data};
+    EventArrayType initWithData{1, 5, 6};
 }
